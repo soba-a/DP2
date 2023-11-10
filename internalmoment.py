@@ -1,4 +1,4 @@
-from calc import *
+from calcnew import *
 import matplotlib.pyplot as plt
 
 # # time to just make an internal moment graph
@@ -62,14 +62,32 @@ rV = sp.Matrix([0, y, 0]).T
 eq_0_b1 = Tp + rV.cross(Fp)
 eq_0_b1_bend = sp.sqrt(eq_0_b1[0]**2 + eq_0_b1[2]**2)
 eq_0_b1_tors = eq_0_b1[1]
+eq_0_b1_x = eq_0_b1[0]
+eq_0_b1_z = eq_0_b1[2]
+# print("Mx eq:", eq_0_b1[0])
+# print("Mz eq:", eq_0_b1[2])
+# print("Combined Bending eq:", eq_0_b1_bend)
+# print("T eq:", eq_0_b1[1])
 
 eq_b1_b2 = Tp + rV.cross(Fp) + (rV - sp.Matrix([0, 50 + bearing_width/2, 0]).T).cross(R1)
 eq_b1_b2_bend = sp.sqrt(eq_b1_b2[0]**2 + eq_b1_b2[2]**2)
 eq_b1_b2_tors = eq_b1_b2[1]
+eq_b1_b2_x = eq_b1_b2[0]
+eq_b1_b2_z = eq_b1_b2[2]
+# print("Mx eq:", eq_b1_b2[0])
+# print("Mz eq:", eq_b1_b2[2])
+# print("Combined Bending eq:", eq_b1_b2_bend)
+# print("T eq:", eq_b1_b2[1])
 
 eq_b2_165 = Tp + rV.cross(Fp) + (rV - sp.Matrix([0, 50 + bearing_width/2, 0]).T).cross(R1) + (rV - sp.Matrix([0, 150 - bearing_width/2, 0]).T).cross(R2)
 eq_b2_165_bend = sp.sqrt(eq_b2_165[0]**2 + eq_b2_165[2]**2)
 eq_b2_165_tors = eq_b2_165[1]
+eq_b2_165_x = eq_b2_165[0]
+eq_b2_165_z = eq_b2_165[2]
+# print("Mx eq:", eq_b2_165[0])
+# print("Mz eq:", eq_b2_165[2])
+# print("Combined Bending eq:", eq_b2_165_bend)
+# print("T eq:", eq_b2_165[1])
 
 # Plotting the equations
 y_vals = np.linspace(0, 165, 1000)
@@ -79,23 +97,71 @@ eq_b2_165_bend_vals = [eq_b2_165_bend.subs(y, y_val) for y_val in y_vals if y_va
 eq_0_b1_tors_vals = [eq_0_b1_tors.subs(y, y_val) for y_val in y_vals if y_val <= 50+bearing_width/2]
 eq_b1_b2_tors_vals = [eq_b1_b2_tors.subs(y, y_val) for y_val in y_vals if 50+bearing_width/2 < y_val <= 150-bearing_width/2]
 eq_b2_165_tors_vals = [eq_b2_165_tors.subs(y, y_val) for y_val in y_vals if y_val > 150-bearing_width/2]
+eq_0_b1_x_vals = [eq_0_b1_x.subs(y, y_val) for y_val in y_vals if y_val <= 50+bearing_width/2]
+eq_b1_b2_x_vals = [eq_b1_b2_x.subs(y, y_val) for y_val in y_vals if 50+bearing_width/2 < y_val <= 150-bearing_width/2]
+eq_b2_165_x_vals = [eq_b2_165_x.subs(y, y_val) for y_val in y_vals if y_val > 150-bearing_width/2]
+eq_0_b1_z_vals = [eq_0_b1_z.subs(y, y_val) for y_val in y_vals if y_val <= 50+bearing_width/2]
+eq_b1_b2_z_vals = [eq_b1_b2_z.subs(y, y_val) for y_val in y_vals if 50+bearing_width/2 < y_val <= 150-bearing_width/2]
+eq_b2_165_z_vals = [eq_b2_165_z.subs(y, y_val) for y_val in y_vals if y_val > 150-bearing_width/2]
 
-fig, axs = plt.subplots(1, 2, figsize=(12, 12))
+fig, axs = plt.subplots(2, 2, figsize=(12, 12))
 
-axs[0].plot(y_vals[:len(eq_0_b1_bend_vals)], eq_0_b1_bend_vals, label='0 <= y <= Bearing 1')
-axs[0].plot(y_vals[len(eq_0_b1_bend_vals):len(eq_0_b1_bend_vals)+len(eq_b1_b2_bend_vals)], eq_b1_b2_bend_vals, label='Bearing 1 < y <= Bearing 2')
-axs[0].plot(y_vals[len(eq_0_b1_bend_vals)+len(eq_b1_b2_bend_vals):], eq_b2_165_bend_vals, label='Bearing 2 < y <= 165')
-axs[0].set_xlabel('y (mm)')
-axs[0].set_ylabel('Bending Moment (Nmm)')
-axs[0].set_title('Bending Moment vs. y (LEFT TO RIGHT)')
-axs[0].legend()
+# Plotting Bending Moment
+axs[0, 0].plot(y_vals[:len(eq_0_b1_x_vals)], eq_0_b1_x_vals, label='0 <= y <= Bearing 1')
+axs[0, 0].plot(y_vals[len(eq_0_b1_x_vals):len(eq_0_b1_x_vals)+len(eq_b1_b2_x_vals)], eq_b1_b2_x_vals, label='Bearing 1 < y <= Bearing 2')
+axs[0, 0].plot(y_vals[len(eq_0_b1_x_vals)+len(eq_b1_b2_x_vals):], eq_b2_165_x_vals, label='Bearing 2 < y <= 165')
+axs[0, 0].set_xlabel('y (mm)')
+axs[0, 0].set_ylabel('Bending Moment (Nmm)')
+axs[0, 0].set_title('Bending Moment X vs. y (LEFT TO RIGHT)')
+axs[0, 0].legend()
 
-axs[1].plot(y_vals[:len(eq_0_b1_tors_vals)], eq_0_b1_tors_vals, label='0 <= y <= Bearing 1')
-axs[1].plot(y_vals[len(eq_0_b1_tors_vals):len(eq_0_b1_tors_vals)+len(eq_b1_b2_tors_vals)], eq_b1_b2_tors_vals, label='Bearing 1 < y <= Bearing 2')
-axs[1].plot(y_vals[len(eq_0_b1_tors_vals)+len(eq_b1_b2_tors_vals):], eq_b2_165_tors_vals, label='Bearing 2 < y <= 165')
-axs[1].set_xlabel('y (mm)')
-axs[1].set_ylabel('Torque (Nmm)')
-axs[1].set_title('Torque vs. y (LEFT TO RIGHT)')
-axs[1].legend()
+# Plotting Torque
+axs[0, 1].plot(y_vals[:len(eq_0_b1_z_vals)], eq_0_b1_z_vals, label='0 <= y <= Bearing 1')
+axs[0, 1].plot(y_vals[len(eq_0_b1_z_vals):len(eq_0_b1_z_vals)+len(eq_b1_b2_z_vals)], eq_b1_b2_z_vals, label='Bearing 1 < y <= Bearing 2')
+axs[0, 1].plot(y_vals[len(eq_0_b1_z_vals)+len(eq_b1_b2_z_vals):], eq_b2_165_z_vals, label='Bearing 2 < y <= 165')
+axs[0, 1].set_xlabel('y (mm)')
+axs[0, 1].set_ylabel('Bending Moment (Nmm)')
+axs[0, 1].set_title('Bending Moment Z vs. y (LEFT TO RIGHT)')
+axs[0, 1].legend()
 
+axs[1, 0].plot(y_vals[:len(eq_0_b1_bend_vals)], eq_0_b1_bend_vals, label='0 <= y <= Bearing 1')
+axs[1, 0].plot(y_vals[len(eq_0_b1_bend_vals):len(eq_0_b1_bend_vals)+len(eq_b1_b2_bend_vals)], eq_b1_b2_bend_vals, label='Bearing 1 < y <= Bearing 2')
+axs[1, 0].plot(y_vals[len(eq_0_b1_bend_vals)+len(eq_b1_b2_bend_vals):], eq_b2_165_bend_vals, label='Bearing 2 < y <= 165')
+axs[1, 0].set_xlabel('y (mm)')
+axs[1, 0].set_ylabel('Bending Moment (Nmm)')
+axs[1, 0].set_title('Combined Bending Moment vs. y (LEFT TO RIGHT)')
+axs[1, 0].legend()
+
+axs[1, 1].plot(y_vals[:len(eq_0_b1_tors_vals)], eq_0_b1_tors_vals, label='0 <= y <= Bearing 1')
+axs[1, 1].plot(y_vals[len(eq_0_b1_tors_vals):len(eq_0_b1_tors_vals)+len(eq_b1_b2_tors_vals)], eq_b1_b2_tors_vals, label='Bearing 1 < y <= Bearing 2')
+axs[1, 1].plot(y_vals[len(eq_0_b1_tors_vals)+len(eq_b1_b2_tors_vals):], eq_b2_165_tors_vals, label='Bearing 2 < y <= 165')
+axs[1, 1].set_xlabel('y (mm)')
+axs[1, 1].set_ylabel('Torque (Nmm)')
+axs[1, 1].set_title('Torque vs. y (LEFT TO RIGHT)')
+axs[1, 1].legend()
+
+# def mouse_event(event):
+#     print('x: {} and y: {}'.format(event.xdata, event.ydata))
+
+# cid = fig.canvas.mpl_connect('button_press_event', mouse_event)
 plt.show()
+
+
+def returnBend(loc):
+    if loc <= 50 + bearing_width/2:
+        return eq_0_b1_bend
+    elif 50+bearing_width/2 < loc <= 150-bearing_width/2:
+        return eq_b1_b2_bend
+    else:
+        return eq_b2_165_bend
+
+def returnTors(loc):
+    if loc <= 50+bearing_width/2:
+        return eq_0_b1_tors
+    elif 50+bearing_width/2 < loc <= 150-bearing_width/2:
+        return eq_b1_b2_tors
+    else:
+        return eq_b2_165_tors
+
+print(returnBend(50).subs(y, 50))
+print(returnTors(50).subs(y, 50))
